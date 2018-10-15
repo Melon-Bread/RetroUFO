@@ -7,11 +7,71 @@ __author__ = "Melon Bread"
 __version__ = "0.1.0"
 __license__ = "MIT"
 
+import os
+import zipfile
+from shutil import rmtree
+from urllib.request import urlretrieve
+
+URL = 'https://buildbot.libretro.com/nightly'
+
+PLATFORM = 'linux/x86_64'
+
+CORE_LOCATION = '~/.config/retroarch/cores/'
+
 
 def main():
+    """ Where the magic happens """
+    download_cores()
+    extract_cores()
+    clean_up()
+    pass
+
+
+def download_cores():
+    """ Downloads every core to the working directory """
+
+    cores = []
+
+    if not os.path.isdir('cores'):
+        os.makedirs("cores")
+
+    urlretrieve('{}/{}/latest/.index-extended'.format(URL, PLATFORM),
+                'cores/index')
+    print('Obtained core index!')
+
+    core_index = open('cores/index')
+
+    for line in core_index:
+        file_name = line.split(' ', 2)[2:]
+        cores.append(file_name[0].rstrip())
+    core_index.close()
+    cores.sort()
+
+    for core in cores:
+        urlretrieve('{}/{}/latest/{}'.format(URL, PLATFORM, core),
+                    'cores/{}'.format(core))
+        print('Downloaded {} ...'.format(core))
+
+    os.remove('cores/index')
+
+
+def extract_cores():
+    """ Extracts each downloaded core to the RA core directory """
+    print('Extracting all cores to: {}'.format(CORE_LOCATION))
+    for file in os.listdir('cores'):
+        archive = zipfile.ZipFile('cores/{}'.format(file))
+        archive.extractall(CORE_LOCATION)
+        print('Extracted {} ...'.format(file))
+    pass
+
+
+def clean_up():
+    """ Removes all the downloaded files """
+    rmtree('cores/')
     pass
 
 
 if __name__ == "__main__":
     """ This is executed when run from the command line """
     main()
+    pass
