@@ -22,4 +22,4 @@ It will then download and extract all the (latest version) of each  core to: `~/
 - Choose which architecture you are downloading format
 - Choose what platform you are downloading format
 - Download progress bar
-- Keep downloaded archives
+- ~~Keep downloaded archives~~

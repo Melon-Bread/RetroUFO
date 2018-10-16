@@ -24,8 +24,8 @@ def main(args):
     """ Where the magic happens """
     download_cores()
     extract_cores()
-    clean_up()
-    pass
+    if not args.keep:
+        clean_up()
 
 
 def download_cores():
@@ -81,6 +81,9 @@ def clean_up():
 if __name__ == "__main__":
     """ This is executed when run from the command line """
     parser = argparse.ArgumentParser()
+
+    parser.add_argument('-k', '--keep', action='store_true',
+                    help='Keeps downloaded core archives')
 
     args = parser.parse_args()
     main(args)
