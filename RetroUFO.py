@@ -32,13 +32,16 @@ def download_cores():
 
     cores = []
 
+    # Makes core directory to store archives if needed
     if not os.path.isdir('cores'):
         os.makedirs("cores")
 
+    # Downloads a list of all the cores available
     urlretrieve('{}/{}/latest/.index-extended'.format(URL, PLATFORM),
                 'cores/index')
     print('Obtained core index!')
 
+    # Adds all the core's file names to a list
     core_index = open('cores/index')
 
     for line in core_index:
@@ -47,17 +50,20 @@ def download_cores():
     core_index.close()
     cores.sort()
 
+    # Downloads each core from the list
     for core in cores:
         urlretrieve('{}/{}/latest/{}'.format(URL, PLATFORM, core),
                     'cores/{}'.format(core))
         print('Downloaded {} ...'.format(core))
 
+    # Removes index file for easier extraction
     os.remove('cores/index')
 
 
 def extract_cores():
     """ Extracts each downloaded core to the RA core directory """
     print('Extracting all cores to: {}'.format(CORE_LOCATION))
+
     for file in os.listdir('cores'):
         archive = zipfile.ZipFile('cores/{}'.format(file))
         archive.extractall(CORE_LOCATION)
