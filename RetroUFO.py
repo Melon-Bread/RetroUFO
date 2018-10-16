@@ -7,6 +7,7 @@ __author__ = "Melon Bread"
 __version__ = "0.1.0"
 __license__ = "MIT"
 
+import argparse
 import os
 import zipfile
 from shutil import rmtree
@@ -19,7 +20,7 @@ PLATFORM = 'linux/x86_64'
 CORE_LOCATION = '~/.config/retroarch/cores/'
 
 
-def main():
+def main(args):
     """ Where the magic happens """
     download_cores()
     extract_cores()
@@ -79,5 +80,8 @@ def clean_up():
 
 if __name__ == "__main__":
     """ This is executed when run from the command line """
-    main()
+    parser = argparse.ArgumentParser()
+
+    args = parser.parse_args()
+    main(args)
     pass
