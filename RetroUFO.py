@@ -20,7 +20,8 @@ URL = 'https://buildbot.libretro.com/nightly'
 
 # These are the default core locations with normal RetroArch installs based off of 'retroarch.default.cfg`
 CORE_LOCATION = {
-    'linux': '{}/.config/retroarch/cores/'.format(Path.home()),
+    'linux': '{}/.config/retroarch/cores'.format(Path.home()),
+    'switch': '/retroarch/cores',
     'windows': '{}/AppData/Roaming/RetroArch/cores'.format(Path.home())
 }
 
