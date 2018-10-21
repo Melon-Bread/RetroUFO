@@ -15,13 +15,16 @@ from urllib.request import urlretrieve
 
 URL = 'https://buildbot.libretro.com/nightly'
 
-PLATFORM = 'linux/x86_64'
+PLATFORM = 'linux'
+
+ARCHITECTURE = 'x86_64'
 
 CORE_LOCATION = '~/.config/retroarch/cores/'
 
 
 def main(args):
     """ Where the magic happens """
+
     download_cores()
     extract_cores()
     if not args.keep:
@@ -38,7 +41,7 @@ def download_cores():
         os.makedirs("cores")
 
     # Downloads a list of all the cores available
-    urlretrieve('{}/{}/latest/.index-extended'.format(URL, PLATFORM),
+    urlretrieve('{}/{}/{}/latest/.index-extended'.format(URL, PLATFORM, ARCHITECTURE),
                 'cores/index')
     print('Obtained core index!')
 
@@ -53,7 +56,7 @@ def download_cores():
 
     # Downloads each core from the list
     for core in cores:
-        urlretrieve('{}/{}/latest/{}'.format(URL, PLATFORM, core),
+        urlretrieve('{}/{}/{}/latest/{}'.format(URL, PLATFORM, ARCHITECTURE, core),
                     'cores/{}'.format(core))
         print('Downloaded {} ...'.format(core))
 
@@ -83,7 +86,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-k', '--keep', action='store_true',
-                    help='Keeps downloaded core archives')
+                        help='Keeps downloaded core archives')
 
     args = parser.parse_args()
     main(args)
