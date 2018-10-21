@@ -1,5 +1,5 @@
 # RetroUFO
-[![Platform](https://img.shields.io/badge/Platform-Linux--64-yellow.svg)](https://getfedora.org/en/workstation/download/)
+[![Platform](https://img.shields.io/badge/platform-linux%20%7C%20windows-yellow.svg)]()
 [![Python Version](https://img.shields.io/pypi/pyversions/Django.svg)](https://www.python.org/downloads/) [![License.](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
 
 A ~~messy~~ Python script that grabs the latest version of every libretro core from the [build bot](https://buildbot.libretro.com/).  
