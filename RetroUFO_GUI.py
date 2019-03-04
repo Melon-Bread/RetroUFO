@@ -7,7 +7,6 @@ __author__ = "Melon Bread"
 __version__ = "0.8.0"
 __license__ = "MIT"
 
-import argparse
 import os
 import platform
 import sys
@@ -15,9 +14,10 @@ import zipfile
 from pathlib import Path
 from shutil import rmtree
 from urllib.request import urlretrieve
-from PySide2.QtWidgets import QApplication, QDialog, QLineEdit, QComboBox, QCheckBox, QPushButton, QFileDialog, \
-    QVBoxLayout, QTextEdit
 
+from PySide2.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
+                               QFileDialog, QLineEdit, QPushButton, QTextEdit,
+                               QVBoxLayout)
 
 URL = 'https://buildbot.libretro.com/nightly'
 
@@ -27,8 +27,8 @@ CORE_LOCATION = {
     'windows': '{}/AppData/Roaming/RetroArch/cores'.format(Path.home())
 }
 
-class Form(QDialog):
 
+class Form(QDialog):
     def __init__(self, parent=None):
         super(Form, self).__init__(parent)
         self.setWindowTitle('RetroUFO')
@@ -57,10 +57,9 @@ class Form(QDialog):
 
         self.teditLog = QTextEdit()
         self.teditLog.setReadOnly(True)
-        
+
         self.chkboxKeepDownload = QCheckBox('Keep Downloaded Cores')
         self.chkboxKeepDownload.setChecked(False)
-
 
         self.btnGrabCores = QPushButton('Grab Cores')
         self.btnGrabCores.clicked.connect(self.grab_cores)
@@ -94,23 +93,25 @@ class Form(QDialog):
             self.btnCoreLocation.setEnabled(True)
 
     def choose_location(self):
-        directory = QFileDialog.getExistingDirectory(self, 'Choose Target Location', '/home')
+        directory = QFileDialog.getExistingDirectory(
+            self, 'Choose Target Location', '/home')
 
         self.leditCoreLocation.insert(directory)
 
     def grab_cores(self):
-        self.teditLog.insertPlainText('Starting UFO Grabber')
+        self.teditLog.insertPlainText('Starting UFO Grabber\n')
         """ Where the magic happens """
 
         # If a platform and/or architecture is not supplied it is grabbed automatically
-        platform = self.get_platform()  # TODO: rename this var to prevent conflict
+        platform = self.get_platform(
+        )  # TODO: rename this var to prevent conflict
         architecture = self.get_architecture()
         location = CORE_LOCATION[platform]
 
         self.download_cores(platform, architecture)
         self.extract_cores(location)
 
-        if not args.keep:
+        if not self.chkboxKeepDownload.isChecked():
             self.clean_up()
 
     def get_platform(self):
@@ -119,7 +120,8 @@ class Form(QDialog):
         if platform.system() == 'Linux':
             return 'linux'
 
-        elif platform.system() == 'Windows' or 'MSYS_NT' in platform.system():  # Checks for MSYS environment as well
+        elif platform.system() == 'Windows' or 'MSYS_NT' in platform.system(
+        ):  # Checks for MSYS environment as well
             return 'windows'
         else:
             print('ERROR: Platform not found or supported')
@@ -147,8 +149,9 @@ class Form(QDialog):
             os.makedirs("cores")
 
         # Downloads a list of all the cores available
-        urlretrieve('{}/{}/{}/latest/.index-extended'.format(URL, _platform, _architecture),
-                    'cores/index')
+        urlretrieve(
+            '{}/{}/{}/latest/.index-extended'.format(
+                URL, _platform, _architecture), 'cores/index')
         self.teditLog.insertPlainText('Obtained core index!')
 
         # Adds all the core's file names to a list
@@ -162,8 +165,9 @@ class Form(QDialog):
 
         # Downloads each core from the list
         for core in cores:
-            urlretrieve('{}/{}/{}/latest/{}'.format(URL, _platform, _architecture, core),
-                        'cores/{}'.format(core))
+            urlretrieve(
+                '{}/{}/{}/latest/{}'.format(URL, _platform, _architecture,
+                                            core), 'cores/{}'.format(core))
             print('Downloaded {} ...'.format(core))
 
         # Removes index file for easier extraction
