@@ -17,7 +17,7 @@ from urllib.request import urlretrieve
 
 from PySide2.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
                                QFileDialog, QLineEdit, QPushButton, QTextEdit,
-                               QVBoxLayout)
+                               QVBoxLayout, QMessageBox)
 
 URL = 'https://buildbot.libretro.com/nightly'
 
@@ -36,13 +36,19 @@ class Form(QDialog):
         # Create widgets
         self.chkboxPlatformDetect = QCheckBox('Platform Auto-Detect')
         self.chkboxPlatformDetect.setChecked(True)
-        self.chkboxPlatformDetect.stateChanged.connect(self.auto_platform)
+        self.chkboxPlatformDetect.stateChanged.connect(self.auto_detect)
 
         self.cmbboxPlatform = QComboBox()
         self.cmbboxPlatform.setEnabled(False)
         self.cmbboxPlatform.setEditable(False)
         self.cmbboxPlatform.addItem('Linux')
         self.cmbboxPlatform.addItem('Windows')
+
+        self.cmbboxArchitecture = QComboBox()
+        self.cmbboxArchitecture.setEnabled(False)
+        self.cmbboxArchitecture.setEditable(False)
+        self.cmbboxArchitecture.addItem('x86')
+        self.cmbboxArchitecture.addItem('x86_64')
 
         self.chkboxLocationDetect = QCheckBox('Core Location Auto-Detect')
         self.chkboxLocationDetect.setChecked(True)
@@ -68,6 +74,7 @@ class Form(QDialog):
         layout = QVBoxLayout()
         layout.addWidget(self.chkboxPlatformDetect)
         layout.addWidget(self.cmbboxPlatform)
+        layout.addWidget(self.cmbboxArchitecture)
         layout.addWidget(self.chkboxLocationDetect)
         layout.addWidget(self.leditCoreLocation)
         layout.addWidget(self.btnCoreLocation)
@@ -78,11 +85,13 @@ class Form(QDialog):
         # Set dialog layout
         self.setLayout(layout)
 
-    def auto_platform(self):
+    def auto_detect(self):
         if self.chkboxPlatformDetect.isChecked():
             self.cmbboxPlatform.setEnabled(False)
+            self.cmbboxArchitecture.setEnabled(False)
         else:
             self.cmbboxPlatform.setEnabled(True)
+            self.cmbboxArchitecture.setEnabled(True)
 
     def auto_location(self):
         if self.chkboxLocationDetect.isChecked():
@@ -103,8 +112,7 @@ class Form(QDialog):
         """ Where the magic happens """
 
         # If a platform and/or architecture is not supplied it is grabbed automatically
-        platform = self.get_platform(
-        )  # TODO: rename this var to prevent conflict
+        platform = self.get_platform()  # TODO: rename this var to prevent conflict
         architecture = self.get_architecture()
         location = CORE_LOCATION[platform]
 
@@ -120,11 +128,11 @@ class Form(QDialog):
         if platform.system() == 'Linux':
             return 'linux'
 
-        elif platform.system() == 'Windows' or 'MSYS_NT' in platform.system(
-        ):  # Checks for MSYS environment as well
+        elif platform.system() == 'Windows' or 'MSYS_NT' in platform.system():  # Checks for MSYS environment as well
             return 'windows'
         else:
-            print('ERROR: Platform not found or supported')
+            msgBox = QMessageBox.warning(self, 'Error', 'Platform not found or supported!', QMessageBox.Ok)
+            msgBox.exec_()
             sys.exit(0)
 
     def get_architecture(self):
@@ -136,7 +144,8 @@ class Form(QDialog):
         elif '32' in platform.architecture()[0]:
             return 'x86'
         else:
-            print('ERROR: Architecture not found or supported')
+            msgBox = QMessageBox.warning(self, 'Error', 'Architecture not found or supported', QMessageBox.Ok)
+            msgBox.exec_()
             sys.exit(0)
 
     def download_cores(self, _platform, _architecture):
