@@ -112,9 +112,12 @@ class Form(QDialog):
         """ Where the magic happens """
 
         # If a platform and/or architecture is not supplied it is grabbed automatically
-        platform = self.get_platform()  # TODO: rename this var to prevent conflict
-        architecture = self.get_architecture()
-        location = CORE_LOCATION[platform]
+        platform = self.cmbboxPlatform.currentText().lower() if not self.chkboxPlatformDetect.isChecked() \
+            else self.get_platform()  # TODO: rename this var to prevent conflict
+        architecture = self.cmbboxArchitecture.currentText().lower() if not self.chkboxPlatformDetect.isChecked() \
+            else self.get_architecture()
+        location = self.leditCoreLocation.text() if not self.chkboxLocationDetect.isChecked() \
+            else CORE_LOCATION[platform]
 
         self.download_cores(platform, architecture)
         self.extract_cores(location)
