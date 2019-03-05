@@ -10,7 +10,6 @@ __license__ = "MIT"
 import os
 import platform
 import sys
-import time
 import zipfile
 from shutil import rmtree
 from urllib.request import urlretrieve
@@ -48,23 +47,27 @@ class GrabThread(QThread):
         self.extract_cores(self.location)
         pass
 
+    def create_dir(self, _name):
+        if not os.path.isdir(_name):
+            os.makedirs(_name)
+
+    def obtain_core_list(self, _platform, _architecture):
+        urlretrieve(
+            '{}/{}/{}/latest/.index-extended'.format(
+                URL, _platform, _architecture), 'cores/index')
+        self.add_to_log.emit('Obtained core index!\n')
+
     def download_cores(self, _platform, _architecture):
         """ Downloads every core to the working directory """
 
         cores = []
 
         # Makes core directory to store archives if needed
-        if not os.path.isdir('cores'):
-            os.makedirs("cores")
-        time.sleep(1)  # TODO: Do not leave this here! Find a way to wait for the core dir to be made!
+        self.create_dir("cores")
 
         # Downloads a list of all the cores available
-        urlretrieve(
-            '{}/{}/{}/latest/.index-extended'.format(
-                URL, _platform, _architecture), 'cores/index')
-        time.sleep(1)  # TODO: Do not leave this here! Find a way to wait for the index to download!
-        self.add_to_log.emit('Obtained core index!\n')
-
+        self.obtain_core_list(_platform, _architecture)
+        
         # Adds all the core's file names to a list
         core_index = open('cores/index')
 
@@ -180,6 +183,8 @@ class Form(QDialog):
 
     def grab_cores(self):
         """ Where the magic happens """
+        if not self.chkboxKeepDownload.isChecked():
+            self.clean_up()
 
         # TODO: Lock (disable) the UI elements while grabbing cores
 
@@ -191,8 +196,6 @@ class Form(QDialog):
         self.grab.add_to_log.connect(self.update_log)
         self.grab.start()
 
-        if not self.chkboxKeepDownload.isChecked():
-            self.clean_up()
 
     def get_platform(self):
         """ Gets the Platform and Architecture if not supplied """
