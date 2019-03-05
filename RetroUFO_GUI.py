@@ -32,6 +32,7 @@ CORE_LOCATION = {
 
 class GrabThread(QThread):
     add_to_log = Signal(str)
+    lock = Signal(bool)
 
     def __init__(self, _platform, _architecture, _location):
         QThread.__init__(self)
@@ -43,10 +44,11 @@ class GrabThread(QThread):
         self.wait()
 
     def run(self):
+        self.lock.emit(True)
         self.add_to_log.emit('~Starting UFO Grabber~\n')
         self.download_cores(self.platform, self.architecture)
         self.extract_cores(self.location)
-        pass
+        self.lock.emit(False)
 
     def create_dir(self, _name):
         if not os.path.isdir(_name):
@@ -145,19 +147,19 @@ class Form(QDialog):
         self.btnGrabCores.clicked.connect(self.grab_cores)
 
         # Create layout and add widgets
-        layout = QVBoxLayout()
-        layout.addWidget(self.chkboxPlatformDetect)
-        layout.addWidget(self.cmbboxPlatform)
-        layout.addWidget(self.cmbboxArchitecture)
-        layout.addWidget(self.chkboxLocationDetect)
-        layout.addWidget(self.leditCoreLocation)
-        layout.addWidget(self.btnCoreLocation)
-        layout.addWidget(self.teditLog)
-        layout.addWidget(self.chkboxKeepDownload)
-        layout.addWidget(self.btnGrabCores)
+        self.formLayout = QVBoxLayout()
+        self.formLayout.addWidget(self.chkboxPlatformDetect)
+        self.formLayout.addWidget(self.cmbboxPlatform)
+        self.formLayout.addWidget(self.cmbboxArchitecture)
+        self.formLayout.addWidget(self.chkboxLocationDetect)
+        self.formLayout.addWidget(self.leditCoreLocation)
+        self.formLayout.addWidget(self.btnCoreLocation)
+        self.formLayout.addWidget(self.teditLog)
+        self.formLayout.addWidget(self.chkboxKeepDownload)
+        self.formLayout.addWidget(self.btnGrabCores)
 
         # Set dialog layout
-        self.setLayout(layout)
+        self.setLayout(self.formLayout)
 
     def auto_detect(self):
         if self.chkboxPlatformDetect.isChecked():
@@ -187,6 +189,18 @@ class Form(QDialog):
         # Auto scrolling on log UI
         self.teditLog.moveCursor(QTextCursor.End)
 
+    def lock_ui(self, _lock):
+        # Cycle through each widget and disable it except for log UI
+        widgets = (self.formLayout.itemAt(i).widget() for i in range(self.formLayout.count()))
+        for widget in widgets:
+            if isinstance(widget, QTextEdit):
+                pass
+            else:
+                widget.setDisabled(_lock)
+                # Have to run these to make sure only the correct things unlock after grab thread
+                self.auto_detect()
+                self.auto_location()
+
 
     def grab_cores(self):
         """ Where the magic happens """
@@ -201,6 +215,7 @@ class Form(QDialog):
 
         self.grab = GrabThread(platform, architecture, location)
         self.grab.add_to_log.connect(self.update_log)
+        self.grab.lock.connect(self.lock_ui)
         self.grab.start()
 
     def get_platform(self):
