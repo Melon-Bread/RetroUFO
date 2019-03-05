@@ -23,8 +23,9 @@ URL = 'https://buildbot.libretro.com/nightly'
 
 # These are the default core locations with normal RetroArch installs based off of 'retroarch.default.cfg`
 CORE_LOCATION = {
-    'linux': '{}/.config/retroarch/cores'.format(Path.home()),
-    'windows': '{}/AppData/Roaming/RetroArch/cores'.format(Path.home())
+    'linux': '{}/.config/retroarch/cores'.format(os.path.expanduser('~')),
+    'apple/osx': '{}/Library/Applications/RetroArch.app/Contents/Resources/cores'.format(os.path.expanduser('~')), # macOS
+    'windows': '{}/AppData/Roaming/RetroArch/cores'.format(os.path.expanduser('~'))
 }
 
 
@@ -42,6 +43,7 @@ class Form(QDialog):
         self.cmbboxPlatform.setEnabled(False)
         self.cmbboxPlatform.setEditable(False)
         self.cmbboxPlatform.addItem('Linux')
+        self.cmbboxPlatform.addItem('macOS')
         self.cmbboxPlatform.addItem('Windows')
 
         self.cmbboxArchitecture = QComboBox()
@@ -103,19 +105,17 @@ class Form(QDialog):
 
     def choose_location(self):
         directory = QFileDialog.getExistingDirectory(
-            self, 'Choose Target Location', '/home')
+            self, 'Choose Target Location', os.path.expanduser('~'))
 
         self.leditCoreLocation.insert(directory)
 
     def grab_cores(self):
-        self.teditLog.insertPlainText('Starting UFO Grabber\n')
+        self.teditLog.insertPlainText('~Starting UFO Grabber~\n')
         """ Where the magic happens """
 
         # If a platform and/or architecture is not supplied it is grabbed automatically
-        platform = self.cmbboxPlatform.currentText().lower() if not self.chkboxPlatformDetect.isChecked() \
-            else self.get_platform()  # TODO: rename this var to prevent conflict
-        architecture = self.cmbboxArchitecture.currentText().lower() if not self.chkboxPlatformDetect.isChecked() \
-            else self.get_architecture()
+        platform = self.get_platform()  # TODO: rename this var to prevent conflict
+        architecture = self.get_architecture()
         location = self.leditCoreLocation.text() if not self.chkboxLocationDetect.isChecked() \
             else CORE_LOCATION[platform]
 
@@ -127,16 +127,23 @@ class Form(QDialog):
 
     def get_platform(self):
         """ Gets the Platform and Architecture if not supplied """
-
-        if platform.system() == 'Linux':
-            return 'linux'
-
-        elif platform.system() == 'Windows' or 'MSYS_NT' in platform.system():  # Checks for MSYS environment as well
-            return 'windows'
+        
+        if not self.chkboxPlatformDetect.isChecked():
+            if self.cmbboxPlatform.currentText() == 'macOS':
+                return 'apple/osx' # macOS
+            else:
+                return self.cmbboxPlatform.currentText().lower()
         else:
-            msgBox = QMessageBox.warning(self, 'Error', 'Platform not found or supported!', QMessageBox.Ok)
-            msgBox.exec_()
-            sys.exit(0)
+            if platform.system() == 'Linux':
+                return 'linux'
+            elif platform.system() == 'Darwin': # macOS
+                return 'apple/osx'
+            elif platform.system() == 'Windows' or 'MSYS_NT' in platform.system():  # Checks for MSYS environment as well
+                return 'windows'
+            else:
+                msgBox = QMessageBox.warning(self, 'Error', 'Platform not found or supported!', QMessageBox.Ok)
+                msgBox.exec_()
+                sys.exit(0)
 
     def get_architecture(self):
         """ Gets the Platform and Architecture if not supplied """
@@ -164,7 +171,7 @@ class Form(QDialog):
         urlretrieve(
             '{}/{}/{}/latest/.index-extended'.format(
                 URL, _platform, _architecture), 'cores/index')
-        self.teditLog.insertPlainText('Obtained core index!')
+        self.teditLog.insertPlainText('\nObtained core index!')
 
         # Adds all the core's file names to a list
         core_index = open('cores/index')
@@ -180,19 +187,19 @@ class Form(QDialog):
             urlretrieve(
                 '{}/{}/{}/latest/{}'.format(URL, _platform, _architecture,
                                             core), 'cores/{}'.format(core))
-            print('Downloaded {} ...'.format(core))
+            self.teditLog.insertPlainText('\nDownloaded {} ...'.format(core))
 
         # Removes index file for easier extraction
         os.remove('cores/index')
 
     def extract_cores(self, _location):
         """ Extracts each downloaded core to the RA core directory """
-        print('Extracting all cores to: {}'.format(_location))
+        self.teditLog.insertPlainText('\nExtracting all cores to: {}'.format(_location))
 
         for file in os.listdir('cores'):
             archive = zipfile.ZipFile('cores/{}'.format(file))
             archive.extractall(_location)
-            print('Extracted {} ...'.format(file))
+            self.teditLog.insertPlainText('\nExtracted {} ...'.format(file))
 
     def clean_up(self):
         """ Removes all the downloaded files """
