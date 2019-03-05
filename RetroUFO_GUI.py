@@ -10,10 +10,12 @@ __license__ = "MIT"
 import os
 import platform
 import sys
+import time
 import zipfile
 from shutil import rmtree
 from urllib.request import urlretrieve
 
+from PySide2.QtCore import QThread, Signal
 from PySide2.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
                                QFileDialog, QLineEdit, QPushButton, QTextEdit,
                                QVBoxLayout, QMessageBox)
@@ -23,9 +25,74 @@ URL = 'https://buildbot.libretro.com/nightly'
 # These are the default core locations with normal RetroArch installs based off of 'retroarch.default.cfg`
 CORE_LOCATION = {
     'linux': '{}/.config/retroarch/cores'.format(os.path.expanduser('~')),
-    'apple/osx': '/Applications/RetroArch.app/Contents/Resources/cores', # macOS
+    'apple/osx': '/Applications/RetroArch.app/Contents/Resources/cores',  # macOS
     'windows': '{}/AppData/Roaming/RetroArch/cores'.format(os.path.expanduser('~'))
 }
+
+
+class GrabThread(QThread):
+    add_to_log = Signal(str)
+
+    def __init__(self, _platform, _architecture, _location):
+        QThread.__init__(self)
+        self.platform = _platform
+        self.architecture = _architecture
+        self.location = _location
+
+    def __del__(self):
+        self.wait()
+
+    def run(self):
+        self.add_to_log.emit('~Starting UFO Grabber~\n')
+        self.download_cores(self.platform, self.architecture)
+        self.extract_cores(self.location)
+        pass
+
+    def download_cores(self, _platform, _architecture):
+        """ Downloads every core to the working directory """
+
+        cores = []
+
+        # Makes core directory to store archives if needed
+        if not os.path.isdir('cores'):
+            os.makedirs("cores")
+        time.sleep(1)  # TODO: Do not leave this here! Find a way to wait for the core dir to be made!
+
+        # Downloads a list of all the cores available
+        urlretrieve(
+            '{}/{}/{}/latest/.index-extended'.format(
+                URL, _platform, _architecture), 'cores/index')
+        time.sleep(1)  # TODO: Do not leave this here! Find a way to wait for the index to download!
+        self.add_to_log.emit('Obtained core index!\n')
+
+        # Adds all the core's file names to a list
+        core_index = open('cores/index')
+
+        for line in core_index:
+            file_name = line.split(' ', 2)[2:]
+            cores.append(file_name[0].rstrip())
+        core_index.close()
+        cores.sort()
+
+        # Downloads each core from the list
+        self.add_to_log.emit('Downloading Cores\n')
+        for core in cores:
+            urlretrieve(
+                '{}/{}/{}/latest/{}'.format(URL, _platform, _architecture,
+                                            core), 'cores/{}'.format(core))
+            self.add_to_log.emit('Downloaded {} ...'.format(core))
+
+        # Removes index file for easier extraction
+        os.remove('cores/index')
+
+    def extract_cores(self, _location):
+        """ Extracts each downloaded core to the RA core directory """
+        self.add_to_log.emit('\nExtracting all cores to: {}\n'.format(_location))
+
+        for file in os.listdir('cores'):
+            archive = zipfile.ZipFile('cores/{}'.format(file))
+            archive.extractall(_location)
+            self.add_to_log.emit('Extracted {} ...'.format(file))
 
 
 class Form(QDialog):
@@ -108,41 +175,43 @@ class Form(QDialog):
 
         self.leditCoreLocation.insert(directory)
 
+    def update_log(self, _info):
+        self.teditLog.insertPlainText('{}\n'.format(_info))
+
     def grab_cores(self):
-        self.teditLog.insertPlainText('~Starting UFO Grabber~\n')
         """ Where the magic happens """
 
-        # If a platform and/or architecture is not supplied it is grabbed automatically
-        platform = self.get_platform()  # TODO: rename this var to prevent conflict
-        architecture = self.get_architecture()
-        location = self.leditCoreLocation.text() if not self.chkboxLocationDetect.isChecked() \
-            else CORE_LOCATION[platform]
+        # TODO: Lock (disable) the UI elements while grabbing cores
 
-        self.download_cores(platform, architecture)
-        self.extract_cores(location)
+        platform = self.get_platform()
+        architecture = self.get_architecture()
+        location = self.get_location()
+
+        self.grab = GrabThread(platform, architecture, location)
+        self.grab.add_to_log.connect(self.update_log)
+        self.grab.start()
 
         if not self.chkboxKeepDownload.isChecked():
             self.clean_up()
 
     def get_platform(self):
         """ Gets the Platform and Architecture if not supplied """
-        
+
         if not self.chkboxPlatformDetect.isChecked():
             if self.cmbboxPlatform.currentText() == 'macOS':
-                return 'apple/osx' # macOS
+                return 'apple/osx'  # macOS
             else:
                 return self.cmbboxPlatform.currentText().lower()
         else:
             if platform.system() == 'Linux':
                 return 'linux'
-            elif platform.system() == 'Darwin': # macOS
+            elif platform.system() == 'Darwin':  # macOS
                 return 'apple/osx'
             elif platform.system() == 'Windows' or 'MSYS_NT' in platform.system():  # Checks for MSYS environment as well
                 return 'windows'
             else:
                 msgBox = QMessageBox.warning(self, 'Error', 'Platform not found or supported!', QMessageBox.Ok)
                 msgBox.exec_()
-                sys.exit(0)
 
     def get_architecture(self):
         """ Gets the Platform and Architecture if not supplied """
@@ -155,50 +224,12 @@ class Form(QDialog):
         else:
             msgBox = QMessageBox.warning(self, 'Error', 'Architecture not found or supported', QMessageBox.Ok)
             msgBox.exec_()
-            sys.exit(0)
 
-    def download_cores(self, _platform, _architecture):
-        """ Downloads every core to the working directory """
-
-        cores = []
-
-        # Makes core directory to store archives if needed
-        if not os.path.isdir('cores'):
-            os.makedirs("cores")
-
-        # Downloads a list of all the cores available
-        urlretrieve(
-            '{}/{}/{}/latest/.index-extended'.format(
-                URL, _platform, _architecture), 'cores/index')
-        self.teditLog.insertPlainText('\nObtained core index!')
-
-        # Adds all the core's file names to a list
-        core_index = open('cores/index')
-
-        for line in core_index:
-            file_name = line.split(' ', 2)[2:]
-            cores.append(file_name[0].rstrip())
-        core_index.close()
-        cores.sort()
-
-        # Downloads each core from the list
-        for core in cores:
-            urlretrieve(
-                '{}/{}/{}/latest/{}'.format(URL, _platform, _architecture,
-                                            core), 'cores/{}'.format(core))
-            self.teditLog.insertPlainText('\nDownloaded {} ...'.format(core))
-
-        # Removes index file for easier extraction
-        os.remove('cores/index')
-
-    def extract_cores(self, _location):
-        """ Extracts each downloaded core to the RA core directory """
-        self.teditLog.insertPlainText('\nExtracting all cores to: {}'.format(_location))
-
-        for file in os.listdir('cores'):
-            archive = zipfile.ZipFile('cores/{}'.format(file))
-            archive.extractall(_location)
-            self.teditLog.insertPlainText('\nExtracted {} ...'.format(file))
+    def get_location(self):
+        if not self.chkboxLocationDetect.isChecked():
+            return self.leditCoreLocation.text()
+        else:
+            return CORE_LOCATION[self.get_platform()]
 
     def clean_up(self):
         """ Removes all the downloaded files """
