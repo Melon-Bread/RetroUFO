@@ -11,7 +11,6 @@ import os
 import platform
 import sys
 import zipfile
-from pathlib import Path
 from shutil import rmtree
 from urllib.request import urlretrieve
 
