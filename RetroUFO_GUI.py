@@ -4,7 +4,7 @@ Grabs the latest version of every libretro core from the build bot.
 """
 
 __author__ = "Melon Bread"
-__version__ = "0.8.0"
+__version__ = "0.9.0"
 __license__ = "MIT"
 
 import os
@@ -15,6 +15,7 @@ from shutil import rmtree
 from urllib.request import urlretrieve
 
 from PySide2.QtCore import QThread, Signal
+from PySide2.QtGui import QTextCursor
 from PySide2.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
                                QFileDialog, QLineEdit, QPushButton, QTextEdit,
                                QVBoxLayout, QMessageBox)
@@ -135,6 +136,8 @@ class Form(QDialog):
         self.teditLog = QTextEdit()
         self.teditLog.setReadOnly(True)
 
+        self.tcsrLog = QTextCursor(self.teditLog.document())
+
         self.chkboxKeepDownload = QCheckBox('Keep Downloaded Cores')
         self.chkboxKeepDownload.setChecked(False)
 
@@ -181,6 +184,10 @@ class Form(QDialog):
     def update_log(self, _info):
         self.teditLog.insertPlainText('{}\n'.format(_info))
 
+        # Auto scrolling on log UI
+        self.teditLog.moveCursor(QTextCursor.End)
+
+
     def grab_cores(self):
         """ Where the magic happens """
         if not self.chkboxKeepDownload.isChecked():
@@ -195,7 +202,6 @@ class Form(QDialog):
         self.grab = GrabThread(platform, architecture, location)
         self.grab.add_to_log.connect(self.update_log)
         self.grab.start()
-
 
     def get_platform(self):
         """ Gets the Platform and Architecture if not supplied """
