@@ -23,7 +23,7 @@ URL = 'https://buildbot.libretro.com/nightly'
 # These are the default core locations with normal RetroArch installs based off of 'retroarch.default.cfg`
 CORE_LOCATION = {
     'linux': '{}/.config/retroarch/cores'.format(os.path.expanduser('~')),
-    'apple/osx': '{}/Library/Applications/RetroArch.app/Contents/Resources/cores'.format(os.path.expanduser('~')), # macOS
+    'apple/osx': '/Applications/RetroArch.app/Contents/Resources/cores', # macOS
     'windows': '{}/AppData/Roaming/RetroArch/cores'.format(os.path.expanduser('~'))
 }
 
