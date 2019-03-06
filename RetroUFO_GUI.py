@@ -207,13 +207,11 @@ class Form(QDialog):
         if not self.chkboxKeepDownload.isChecked():
             self.clean_up()
 
-        # TODO: Lock (disable) the UI elements while grabbing cores
-
-        platform = self.get_platform()
+        target_platform = self.get_platform()
         architecture = self.get_architecture()
         location = self.get_location()
 
-        self.grab = GrabThread(platform, architecture, location)
+        self.grab = GrabThread(target_platform, architecture, location)
         self.grab.add_to_log.connect(self.update_log)
         self.grab.lock.connect(self.lock_ui)
         self.grab.start()
