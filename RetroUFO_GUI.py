@@ -264,6 +264,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     # Create and show the form
     form = Form()
+    form.setFixedWidth(438) # So all text on the log UI stays on one line
     form.show()
     # Run the main Qt loop
     sys.exit(app.exec_())
