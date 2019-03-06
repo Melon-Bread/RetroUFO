@@ -54,6 +54,6 @@ If you have your core directory set somewhere special you can override where the
 - ~~Auto detect platform & architecture~~
 - Download progress bar
 - ~~Keep downloaded archives~~
-- ~~Make GUI~~~
+- ~~Make GUI~~
 - Real error handling
 - Support for ARM detection
