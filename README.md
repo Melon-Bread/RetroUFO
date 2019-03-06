@@ -34,15 +34,15 @@ python3 ./RetroUFO_GUI.py
 
 You can then just click the `Grab Cores` button at the bottom and then you should be all set.
 
-<IMG_HERE>
+![](screenshots/grab_cores.gif)
 
 If you would like to grab cores for a different platform or architecture you can override which supported cores it grabs.
 
-<IMG_HERE>
+![](screenshots/custom_platform.gif)
 
 If you have your core directory set somewhere special you can override where the cores extract to.
 
-<IMG_HERE>
+![](screenshots/custom_location.gif)
 
 ***
 ### TO-DO
