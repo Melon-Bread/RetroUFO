@@ -4,7 +4,7 @@ Grabs the latest version of every libretro core from the build bot.
 """
 
 __author__ = "Melon Bread"
-__version__ = "0.8.0"
+__version__ = "0.9.0"
 __license__ = "MIT"
 
 import argparse
@@ -12,7 +12,6 @@ import os
 import platform
 import sys
 import zipfile
-from pathlib import Path
 from shutil import rmtree
 from urllib.request import urlretrieve
 
@@ -20,8 +19,9 @@ URL = 'https://buildbot.libretro.com/nightly'
 
 # These are the default core locations with normal RetroArch installs based off of 'retroarch.default.cfg`
 CORE_LOCATION = {
-    'linux': '{}/.config/retroarch/cores'.format(Path.home()),
-    'windows': '{}/AppData/Roaming/RetroArch/cores'.format(Path.home())
+    'linux': '{}/.config/retroarch/cores'.format(os.path.expanduser('~')),
+    'apple/osx': '/Applications/RetroArch.app/Contents/Resources/cores',  # macOS
+    'windows': '{}/AppData/Roaming/RetroArch/cores'.format(os.path.expanduser('~'))
 }
 
 
@@ -29,7 +29,7 @@ def main(_args):
     """ Where the magic happens """
 
     # If a platform and/or architecture is not supplied it is grabbed automatically
-    platform = _args.platform if _args.platform else get_platform()  # TODO: rename this var to prevent conflict
+    target_platform = _args.platform if _args.platform else get_platform()
     architecture = _args.architecture if _args.architecture else get_architecture()
     location = _args.location if _args.location else CORE_LOCATION[platform]
 
@@ -45,7 +45,8 @@ def get_platform():
 
     if platform.system() == 'Linux':
         return 'linux'
-
+    elif platform.system() == 'Darwin':  # macOS
+        return 'apple/osx'
     elif platform.system() == 'Windows' or 'MSYS_NT' in platform.system():  # Checks for MSYS environment as well
         return 'windows'
     else:
