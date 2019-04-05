@@ -100,6 +100,8 @@ class GrabThread(QThread):
             archive.extractall(_location)
             self.add_to_log.emit('Extracted {} ...'.format(file))
 
+        self.add_to_log.emit('\nAll Cores Updated\n')
+
 
 class Form(QDialog):
     def __init__(self, parent=None):
