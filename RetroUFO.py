@@ -4,7 +4,7 @@ Grabs the latest version of every libretro core from the build bot.
 """
 
 __author__ = "Melon Bread"
-__version__ = "0.9.0"
+__version__ = "0.9.1"
 __license__ = "MIT"
 
 import argparse
@@ -31,9 +31,9 @@ def main(_args):
     # If a platform and/or architecture is not supplied it is grabbed automatically
     target_platform = _args.platform if _args.platform else get_platform()
     architecture = _args.architecture if _args.architecture else get_architecture()
-    location = _args.location if _args.location else CORE_LOCATION[platform]
+    location = _args.location if _args.location else CORE_LOCATION[target_platform]
 
-    download_cores(platform, architecture)
+    download_cores(target_platform, architecture)
     extract_cores(location)
 
     if not args.keep:
