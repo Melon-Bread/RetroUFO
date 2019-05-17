@@ -4,7 +4,7 @@ Grabs the latest version of every libretro core from the build bot.
 """
 
 __author__ = "Melon Bread"
-__version__ = "0.9.1"
+__version__ = "0.9.5"
 __license__ = "MIT"
 
 import os
@@ -257,7 +257,7 @@ class Form(QDialog):
 
     def clean_up(self):
         """ Removes all the downloaded files """
-        if os.listdir('cores'):
+        if os.path.isdir('cores'):
             rmtree('cores/')
 
 
