@@ -15,7 +15,7 @@ from shutil import rmtree
 from urllib.request import urlretrieve
 
 from PySide2.QtCore import QThread, Signal
-from PySide2.QtGui import QTextCursor
+from PySide2.QtGui import QTextCursor, QIcon
 from PySide2.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
                                QFileDialog, QLineEdit, QPushButton, QTextEdit,
                                QVBoxLayout, QMessageBox)
@@ -267,6 +267,7 @@ if __name__ == '__main__':
     # Create and show the form
     form = Form()
     form.setFixedWidth(438) # So all text on the log UI stays on one line
+    form.setWindowIcon(QIcon('icon.png'))
     form.show()
     # Run the main Qt loop
     sys.exit(app.exec_())
