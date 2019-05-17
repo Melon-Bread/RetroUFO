@@ -4,7 +4,7 @@ Grabs the latest version of every libretro core from the build bot.
 """
 
 __author__ = "Melon Bread"
-__version__ = "0.9.0"
+__version__ = "0.9.1"
 __license__ = "MIT"
 
 import os
