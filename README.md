@@ -33,7 +33,7 @@ RetroUFO --help
 
 ### Usage-GUI
 
-The GUI script uses [Qt for Python](https://wiki.qt.io/Qt_for_Python) ([PySide2](https://pypi.org/project/PySide2/)). So you can make sure you have that package installed by running if you plan to run the script manually:  
+The GUI script uses [Qt for Python](https://wiki.qt.io/Qt_for_Python) ([PySide2](https://pypi.org/project/PySide2/)). So you can make sure you have that package installed if you plan to run the script manually:  
 ```bash
 python -m pip install --user PySide2
 ```
@@ -41,7 +41,7 @@ python -m pip install --user PySide2
 
 After that you can just run the script like so:
 ```bash
-RetroUFO_GUI
+RetroUFO-GUI
 ```
 
 You can then just click the `Grab Cores` button at the bottom and then you should be all set.
