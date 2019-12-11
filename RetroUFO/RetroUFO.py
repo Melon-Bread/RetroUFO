@@ -25,13 +25,29 @@ CORE_LOCATION = {
 }
 
 
-def main(_args):
+def main():
     """ Where the magic happens """
 
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('-p', '--platform', metavar='STRING', required=False,
+                        help='Platform you desire to download for')
+
+    parser.add_argument('-a', '--architecture', metavar='STRING', required=False,
+                        help='Architecture for the platform you desire to download for')
+
+    parser.add_argument('-l', '--location', metavar='STRING', required=False,
+                        help='Location you wish the cores to extract to')
+
+    parser.add_argument('-k', '--keep', action='store_true',
+                        help='Keeps downloaded core archives')
+
+    args = parser.parse_args()
+
     # If a platform and/or architecture is not supplied it is grabbed automatically
-    target_platform = _args.platform if _args.platform else get_platform()
-    architecture = _args.architecture if _args.architecture else get_architecture()
-    location = _args.location if _args.location else CORE_LOCATION[target_platform]
+    target_platform = args.platform if args.platform else get_platform()
+    architecture = args.architecture if args.architecture else get_architecture()
+    location = args.location if args.location else CORE_LOCATION[target_platform]
 
     download_cores(target_platform, architecture)
     extract_cores(location)
@@ -117,20 +133,4 @@ def clean_up():
 
 
 if __name__ == "__main__":
-    """ This is executed when run from the command line """
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('-p', '--platform', metavar='STRING', required=False,
-                        help='Platform you desire to download for')
-
-    parser.add_argument('-a', '--architecture', metavar='STRING', required=False,
-                        help='Architecture for tha platform you desire to download for')
-
-    parser.add_argument('-l', '--location', metavar='STRING', required=False,
-                        help='Location you wish the cores to extract to')
-
-    parser.add_argument('-k', '--keep', action='store_true',
-                        help='Keeps downloaded core archives')
-
-    args = parser.parse_args()
-    main(args)
+    main()

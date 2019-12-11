@@ -15,10 +15,19 @@ setuptools.setup(
     keywords=["libretro", "retroarch", "core"],
     url="https://github.com/pypa/sampleproject",
     packages=["RetroUFO"],
+    install_requires=[
+          'PySide2',
+      ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
+    entry_points={
+        'console_scripts': [
+            "RetroUFO=RetroUFO.RetroUFO:main",
+            "RetroUFO-GUI=RetroUFO.RetroUFO_GUI:main"
+        ]
+    },
 )

@@ -5,31 +5,43 @@
 A ~~messy~~ Python script that grabs the latest version of every libretro core from the [build bot](https://buildbot.libretro.com/).  
 
 ***
+
+### Installation
+
+The package can be installed via pip:
+
+```bash
+pip install --user RetroUFO
+```
+
+
 ### Usage-CLI
 
 Just run the script with _Python 3_:
 
 ```bash
-python3 ./RetroUFO.py
+RetroUFO
 ```
 
 It will then download and extract all the latest versions of each core to their default location based on `retroarch.default.cfg` for each platform  
-_(Which is only Linux & Windows for right now)_
+_(Which is only Linux, macOS, & Windows for right now)_
 
 If you are more of a advance user, and want to do things a bit more manually, you can view all the scripts arguments by:
 ```bash
-python3 ./RetroUFO.py --help
+RetroUFO --help
 ```
 
 ### Usage-GUI
 
-The GUI script uses [Qt for Python](https://wiki.qt.io/Qt_for_Python) ([PySide2](https://pypi.org/project/PySide2/)). So you can make sure you have that package installed by running:  
+The GUI script uses [Qt for Python](https://wiki.qt.io/Qt_for_Python) ([PySide2](https://pypi.org/project/PySide2/)). So you can make sure you have that package installed by running if you plan to run the script manually:  
 ```bash
 pip3 install --user PySide2
 ```
+
+
 After that you can just run the script like so:
 ```bash
-python3 ./RetroUFO_GUI.py
+RetroUFO_GUI
 ```
 
 You can then just click the `Grab Cores` button at the bottom and then you should be all set.
@@ -57,3 +69,4 @@ If you have your core directory set somewhere special you can override where the
 - ~~Make GUI~~
 - Real error handling
 - Support for ARM detection
+- ~~Make a PyPi package~~
