@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="RetroUFO",
-    version="0.9.5",
+    version="0.9.5-1",
     author="Melon Bread",
     author_email="rain@melonbread.dev",
     description="Easily upgrade all libreto cores from the build bot",
