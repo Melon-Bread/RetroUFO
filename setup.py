@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     license="MIT",
     keywords=["libretro", "retroarch", "core"],
-    url="https://github.com/pypa/sampleproject",
+    url="https://github.com/Melon-Bread/RetroUFO",
     packages=["RetroUFO"],
     install_requires=[
           'PySide2',
