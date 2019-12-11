@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="RetroUFO", # Replace with your own username
+    name="RetroUFO",
     version="0.9.5",
     author="Melon Bread",
     author_email="rain@melonbread.dev",
