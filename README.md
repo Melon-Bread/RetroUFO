@@ -1,6 +1,6 @@
 # RetroUFO
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macos%20%7C%20windows-yellow.svg)](https://www.youtube.com/watch?v=NLGoKxh8Aq4)
-[![Python Version](https://img.shields.io/pypi/pyversions/Django.svg)](https://www.python.org/downloads/) [![License.](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
+[![Python Version](https://img.shields.io/pypi/pyversions/Django.svg)](https://www.python.org/downloads/) [![PyPI license](https://img.shields.io/pypi/l/ansicolortags.svg)](https://opensource.org/licenses/MIT) [![PyPI version](https://badge.fury.io/py/RetroUFO.svg)](https://pypi.org/project/RetroUFO/)
 
 A ~~messy~~ Python script that grabs the latest version of every libretro core from the [build bot](https://buildbot.libretro.com/).  
 
