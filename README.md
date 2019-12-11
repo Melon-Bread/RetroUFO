@@ -17,7 +17,7 @@ python -m pip install --user RetroUFO
 
 ### Usage-CLI
 
-Just run the script with _Python 3_:
+Just run the script from the terminal:
 
 ```bash
 RetroUFO
