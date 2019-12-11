@@ -11,7 +11,7 @@ A ~~messy~~ Python script that grabs the latest version of every libretro core f
 The package can be installed via pip:
 
 ```bash
-pip install --user RetroUFO
+python -m pip install --user RetroUFO
 ```
 
 
@@ -35,7 +35,7 @@ RetroUFO --help
 
 The GUI script uses [Qt for Python](https://wiki.qt.io/Qt_for_Python) ([PySide2](https://pypi.org/project/PySide2/)). So you can make sure you have that package installed by running if you plan to run the script manually:  
 ```bash
-pip install --user PySide2
+python -m pip install --user PySide2
 ```
 
 
