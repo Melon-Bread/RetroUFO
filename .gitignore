@@ -108,3 +108,6 @@ venv.bak/
 
 # folders from script
 cores/
+
+# VSCode
+.vscode/
