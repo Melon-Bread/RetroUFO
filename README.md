@@ -35,7 +35,7 @@ RetroUFO --help
 
 The GUI script uses [Qt for Python](https://wiki.qt.io/Qt_for_Python) ([PySide2](https://pypi.org/project/PySide2/)). So you can make sure you have that package installed by running if you plan to run the script manually:  
 ```bash
-pip3 install --user PySide2
+pip install --user PySide2
 ```
 
 
