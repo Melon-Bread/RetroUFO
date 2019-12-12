@@ -60,13 +60,14 @@ If you have your core directory set somewhere special you can override where the
 ### TO-DO
 
 - Set where cores are downloaded
+- Real error handling
+- Support for ARM detection
+- Download progress bar
+- Join the code base between the CLI & GUI
 - ~~Set where cores are extracted for RA Usage~~
 - ~~Choose which architecture you are downloading format~~
 - ~~Choose what platform you are downloading format~~
 - ~~Auto detect platform & architecture~~
-- Download progress bar
 - ~~Keep downloaded archives~~
 - ~~Make GUI~~
-- Real error handling
-- Support for ARM detection
 - ~~Make a PyPi package~~
